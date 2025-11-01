@@ -4,7 +4,7 @@ echo Installing CUDA Profiler GUI Dependencies
 echo ========================================
 echo.
 
-pip install matplotlib numpy
+pip install -r ..\requirements.txt
 
 echo.
 echo ========================================

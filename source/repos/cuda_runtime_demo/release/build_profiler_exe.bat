@@ -4,9 +4,9 @@ echo Building CUDA Profiler GUI Executable
 echo ========================================
 echo.
 
-REM Install PyInstaller if not already installed
-echo Installing PyInstaller...
-pip install pyinstaller
+REM Install dependencies if not already installed
+echo Installing dependencies...
+pip install -r ..\requirements-dev.txt
 
 echo.
 echo Building executable...

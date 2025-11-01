@@ -52,11 +52,12 @@ A professional Python-based GUI application for profiling CUDA applications usin
 
 ### Python Dependencies
 ```bash
-pip install matplotlib numpy
+pip install -r requirements.txt
 ```
 
 Or run:
 ```cmd
+cd source/repos/cuda_runtime_demo/release
 install_profiler_dependencies.bat
 ```
 

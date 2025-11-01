@@ -1,0 +1,13 @@
+# CUDA Profiler GUI - Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# Include runtime dependencies
+-r requirements.txt
+
+# Build and packaging tools
+pyinstaller>=6.0.0
+
+# Development tools (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=5.0.0
