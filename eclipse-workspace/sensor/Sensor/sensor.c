@@ -516,8 +516,9 @@ int32_t main(void) {
         (void)osDelay(1000U);
     }
     
-    /* MISRA Fix: Unreachable but required for type consistency */
-    /* return 0; */
+    /* MISRA Fix: Return statement required at end of execution path (RULE_17_4-a) */
+    /* Note: This code is unreachable due to infinite loop above, but required for MISRA compliance */
+    return 0;
 }
 
 /* ========================================================================
