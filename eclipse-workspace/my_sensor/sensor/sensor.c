@@ -18,13 +18,10 @@
 
 /* Platform-specific low-level write (not a stdio function, not flagged by MISRA 21.6) */
 #if defined(_WIN32) || defined(_WIN64)
-/* Windows: use WriteFile via kernel32 */
-extern void *__stdcall GetStdHandle(uint32_t nStdHandle);
-extern int32_t __stdcall WriteFile(void *hFile, const void *lpBuffer,
-                                   uint32_t nNumberOfBytesToWrite,
-                                   uint32_t *lpNumberOfBytesWritten,
-                                   void *lpOverlapped);
-#define STD_OUTPUT_HANDLE_VAL 0xFFFFFFF5U
+/* FIX: Rule 8.6 - Include proper header instead of manual extern declarations */
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define STD_OUTPUT_HANDLE_VAL ((DWORD)STD_OUTPUT_HANDLE)
 
 /* FIX: Rule 8.4 - Forward declarations for all static functions */
 static int32_t safe_write(const char *buf, size_t len);
@@ -46,7 +43,7 @@ static int32_t safe_write(const char *buf, size_t len);
 /* FIX: Rule 17.3 (Mandatory) - Prototypes shall precede function calls */
 static int32_t readSensor(int32_t *value);
 static void testMemset(char *buffer, int32_t size);
-static void testMemcpy(char *dest, const char *src, int32_t size);
+
 static void initialize(void);
 static void finalize(void);
 static void printMessage(int32_t msgIndex, int32_t value);
@@ -70,9 +67,9 @@ static int32_t safe_write(const char *buf, size_t len)
     else
     {
 #if defined(_WIN32) || defined(_WIN64)
-        uint32_t written = 0U;
-        void *handle = GetStdHandle(STD_OUTPUT_HANDLE_VAL);
-        (void)WriteFile(handle, buf, (uint32_t)len, &written, NULL);
+        DWORD written = 0U;
+        HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE_VAL);
+        (void)WriteFile(handle, buf, (DWORD)len, &written, NULL);
         result = (int32_t)written;
 #else
         result = (int32_t)write(1, buf, (unsigned long)len);
@@ -248,11 +245,6 @@ static void testMemset(char *buffer, int32_t size)
     (void)memset(buffer, 0, (size_t)size);
 }
 
-static void testMemcpy(char *dest, const char *src, int32_t size)
-{
-    /* FIX: Rule 10.3 - Cast int32_t to size_t for memcpy's third parameter */
-    (void)memcpy(dest, src, (size_t)size);
-}
 
 /* FIX: Rule 1.5 / Rule 8.2 - Empty parameter list () replaced with (void)
  *      to be in prototype form.
@@ -339,17 +331,18 @@ static void mainLoop(void)
 {
     int32_t sensorValue = 0;  /* FIX: Dir 4.6 - int -> int32_t */
     int32_t status = 0;       /* FIX: Dir 4.6 - int -> int32_t */
-    while (1 == 1)  /* FIX: Rule 14.3 - Using boolean-style invariant expression */
+    int32_t running = 1;      /* FIX: Rule 14.3 - Loop control variable instead of constant */
+    while (running != 0)      /* FIX: Rule 14.3 - Non-constant controlling expression */
     {
         status = readSensor(&sensorValue);
         if (status == STATUS_STOPPED)
         {
-            break;
+            running = 0;
         }
         else if (status == STATUS_FAILED)
         {
             reportSensorFailure();
-            break;
+            running = 0;
         }
         else  /* FIX: Rule 15.7 - Required terminating else */
         {
